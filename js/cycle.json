@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Used city bike",
+    "weight": 20,
+    "cost": 1000,
+    "condition": 30
+  },
+  {
+    "name": "Mountain bike",
+    "weight": 12,
+    "cost": 3000,
+    "condition": 100 
+  },
+  {
+    "name": "Used road bike",
+    "weight": 9,
+    "cost": 7000,
+    "condition": 60
+  },
+  {
+    "name": "Lightweight road bike",
+    "weight": 6,
+    "cost": 15000,
+    "condition": 100
+  }
+]
