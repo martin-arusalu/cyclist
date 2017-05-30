@@ -1,46 +1,37 @@
 class player {
   constructor() {
-    this.points = 0;
     this.money = 2000;
-    this.cycle = null;
-    this.races = null;
-  }
-
-  get totalDistance() {
-    
+    this.totalDistance = 
+      this.totalMaxSpeed = 
+      this.totalTime = 0
+    this.freerides = [];
   }
 
   get totalAverage() {
-
-  }
-
-  get totalMaxSpeed() {
-
+    averageSpeed(this.totalDistance, this.totalTime);
   }
 }
 
 class freeride {
-  constructor() {
-    this.totalDistance = 
-      this.maxDistance = 
-      this.distance = 
-      this.totalAverage = 
-      this.maxAverage = 
-      this.average = 
-      this.speed = 0
+  constructor(time, distance, maxSpeed) {
+    this.time = time;
+    this.distance = distance;
+    this.maxSpeed = maxSpeed;
+  }
+
+  get average() {
+    averageSpeed(this.distance, this.time);
   }
 }
 
 class race {
-  constructor() {
-    
-  }
+
 }
 
 var game = function () {
   var stage, lever, speed = {}, dir = 'up', dst = {}, time = Date.now(), startTime;
 
-  // Start  
+  // Start
   init();
 
   function init() {
@@ -70,6 +61,7 @@ var game = function () {
     dst.display = new createjs.Text("Distance: " + Math.floor(dst.val/10) / 100 + " km", "12px Helvetica", "#fff");
     dst.display.y = stage.canvas.height / 6 + 80;
 
+
     // Common text attributes    
     speed.curDisplay.x = speed.maxDisplay.x = speed.avgDisplay.x = dst.display.x = stage.canvas.width / 2;
     speed.curDisplay.textBaseline = speed.maxDisplay.textBaseline = speed.avgDisplay.textBaseline = dst.display.textBaseline = "middle";
@@ -88,11 +80,8 @@ var game = function () {
     stage.addChild(lever, dst.display, speed.avgDisplay, speed.maxDisplay, speed.curDisplay);
 
     window.setInterval(() => { 
-      // dst.val = distance in meters
-      // Date.now() - startTime = elapsed milliseconds
-      // 3600 = constant to make the speed km/h
-      // * 100 / 100 = to get 2 decimal places
-      speed.avg = Math.floor(dst.val / (Date.now() - startTime) * 3600 * 100) / 100;
+      
+      speed.avg = averageSpeed(dst.val, Date.now() - startTime);
     }, 1000);
 
     createjs.Ticker.addEventListener('tick', onTick);
@@ -111,15 +100,21 @@ var game = function () {
 
       // Calculate angle from lever to mouse
       // Ref: https://stackoverflow.com/a/38982141
-      var angleInRadians = Math.atan2(stage.mouseY - lever.y, stage.mouseX - lever.x);  
+      var angleInRadians = Math.atan2(stage.mouseY - lever.y, stage.mouseX - lever.x);
       var angleInDegrees = angleInRadians * (180 / Math.PI);
       // End of Ref
 
       if (dir == 'up' && (angleInDegrees > -120 && angleInDegrees < -60)) {
-        speed.cur += 3;
+        speed.cur += 2;
+        dir = 'right';
+      } else if (dir == 'right' && (angleInDegrees > -10 && angleInDegrees < 10)) {
+        speed.cur += 2;
         dir = 'down';
       } else if (dir == 'down' && (angleInDegrees > 60 && angleInDegrees < 120)) {
-        speed.cur += 3;
+        speed.cur += 2;
+        dir = 'left';
+      } else if (dir == 'left' && (angleInDegrees > 170 || angleInDegrees < -170)) {
+        speed.cur += 2;
         dir = 'up';
       }
 
@@ -143,6 +138,16 @@ var game = function () {
       stage.update(e);
     }
   }
+  
+}
+
+// m/ms to km/h
+function averageSpeed(dst, time) {
+  // dst = distance in meters
+  // time = elapsed milliseconds
+  // 3600 = constant to make the speed km/h
+  // * 100 / 100 = to get 2 decimal places
+  return Math.floor(dst / time * 3600 * 100) / 100;
 }
 
 // On load
